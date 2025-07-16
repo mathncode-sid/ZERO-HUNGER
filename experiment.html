@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriPredict AI - Smart Farming Solutions</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* Auth Pages Styles */
+        .auth-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: linear-gradient(145deg, #ffffff, #f9fdf9);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(22, 163, 74, 0.1), 0 10px 10px -5px rgba(22, 163, 74, 0.04);
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(22, 163, 74, 0.1);
+        }
+
+        .auth-card.signup {
+            max-width: 700px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-logo {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            padding: 1rem;
+            border-radius: 1rem;
+            color: white;
+            font-size: 3rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(22, 163, 74, 0.25);
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title i {
+            color: #16a34a;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .form-row.two-cols {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            padding-left: 2.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: color 0.2s;
+        }
+
+        .password-toggle:hover {
+            color: #16a34a;
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(22, 163, 74, 0.25);
+        }
+
+        .auth-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #15803d, #166534);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-btn.loading {
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-links {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-links a, .auth-links button {
+            color: #16a34a;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .auth-links a:hover, .auth-links button:hover {
+            color: #15803d;
+            text-decoration: underline;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #16a34a;
+            transform: translateX(400px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Show/hide animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Dashboard Styles (Original) */
+        .header {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #dcfce7;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo {
+            background: #16a34a;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .logo-text p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .auth-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .form-row.two-cols {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 1rem;
+            }
+            
+            .auth-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Login Page -->
+    <div id="login-page" class="auth-container">
+        <div class="auth-card fade-in">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h2 class="auth-title">Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to your AgriPredict AI account</p>
+            </div>
+            <form class="auth-form" id="login-form">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="login-email" name="email" required placeholder="Enter your email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="login-password" name="password" required placeholder="Enter your password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Sign In</span>
+                </button>
+                <div class="auth-links">
+                    <button type="button" onclick="showForgotPassword()">Forgot your password?</button>
+                    <p>Don't have an account? <a href="#" onclick="showSignup()">Create one here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Page -->
+    <div id="signup-page" class="auth-container hidden">
+        <div class="auth-card signup fade-in">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h2 class="auth-title">Join AgriPredict AI</h2>
+                <p class="auth-subtitle">Start your smart farming journey with AI-powered crop predictions</p>
+            </div>
+            <form class="auth-form" id="signup-form">
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-user"></i>
+                        Personal Information
+                    </div>
+                    <div class="form-row two-cols">
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="first-name" name="firstName" required placeholder="John">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="last-name" name="lastName" required placeholder="Farmer">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="signup-email" name="email" required placeholder="john@farm.com">
+                        </div>
+                    </div>
+                    <div class="form-row two-cols">
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="signup-password" name="password" required placeholder="••••••••">
+                                <button type="button" class="password-toggle" onclick="togglePassword('signup-password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="confirm-password" name="confirmPassword" required placeholder="••••••••">
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirm-password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-tractor"></i>
+                        Farm Information
+                    </div>
+                    <div class="form-group">
+                        <label for="farm-name">Farm Name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-seedling"></i>
+                            <input type="text" id="farm-name" name="farmName" required placeholder="Green Valley Farm">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="farm-location">Farm Location</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" id="farm-location" name="location" required placeholder="City, State/Province, Country">
+                        </div>
+                    </div>
+                    <div class="form-row two-cols">
+                        <div class="form-group">
+                            <label for="farm-type">Primary Crop Type</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-wheat-awn"></i>
+                                <select id="farm-type" name="farmType" required>
+                                    <option value="">Select crop type</option>
+                                    <option value="corn">Corn</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="soybeans">Soybeans</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="vegetables">Vegetables</option>
+                                    <option value="fruits">Fruits</option>
+                                    <option value="mixed">Mixed Crops</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="farm-size">Farm Size</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                                <select id="farm-size" name="farmSize" required>
+                                    <option value="">Select farm size</option>
+                                    <option value="small">Small (1-50 acres)</option>
+                                    <option value="medium">Medium (51-500 acres)</option>
+                                    <option value="large">Large (501-2000 acres)</option>
+                                    <option value="enterprise">Enterprise (2000+ acres)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Create AgriPredict Account</span>
+                </button>
+                <div class="auth-links">
+                    <p>Already have an account? <a href="#" onclick="showLogin()">Sign in here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Page (Original Content) -->
+    <div id="dashboard-page" class="hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>AgriPredict AI</h1>
+                        <p>Smart Farming Solutions</p>
+                    </div>
+                </div>
+                <div class="header-info">
+                    <span id="user-name">Welcome, John Farmer</span>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+            <h2 style="color: #1f2937; margin-bottom: 2rem; text-align: center;">Dashboard Coming Soon</h2>
+            <p style="color: #6b7280; text-align: center;">Your AgriPredict AI dashboard will be available here once you're logged in.</p>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let currentPage = 'login';
+
+        // Utility Functions
+        function showToast(title, message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Hide toast after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toastContainer.removeChild(toast), 300);
+            }, 4000);
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function setLoading(formId, isLoading) {
+            const form = document.getElementById(formId);
+            const button = form.querySelector('.auth-btn');
+            const buttonText = button.querySelector('span');
+            const buttonIcon = button.querySelector('i');
+            
+            if (isLoading) {
+                button.disabled = true;
+                button.classList.add('loading');
+                buttonIcon.className = 'spinner';
+                buttonText.textContent = formId === 'login-form' ? 'Signing In...' : 'Creating Account...';
+            } else {
+                button.disabled = false;
+                button.classList.remove('loading');
+                buttonIcon.className = formId === 'login-form' ? 'fas fa-sign-in-alt' : 'fas fa-check-circle';
+                buttonText.textContent = formId === 'login-form' ? 'Sign In' : 'Create AgriPredict Account';
+            }
+        }
+
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = ['login-page', 'signup-page', 'dashboard-page'];
+            pages.forEach(id => {
+                const page = document.getElementById(id);
+                if (page) page.classList.add('hidden');
+            });
+            
+            // Show target page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                // Add fade-in animation to the card
+                const card = targetPage.querySelector('.auth-card');
+                if (card) {
+                    card.classList.remove('fade-in');
+                    setTimeout(() => card.classList.add('fade-in'), 50);
+                }
+            }
+            
+            currentPage = pageId.replace('-page', '');
+        }
+
+        function showLogin() {
+            showPage('login-page');
+        }
+
+        function showSignup() {
+            showPage('signup-page');
+        }
+
+        function showDashboard() {
+            showPage('dashboard-page');
+        }
+
+        function showForgotPassword() {
+            showToast('Password Reset', 'Password reset functionality will be integrated with your backend API.');
+        }
+
+        function logout() {
+            currentUser = null;
+            showLogin();
+            showToast('Logged Out', 'You have been successfully logged out.');
+        }
+
+        // Form Validation
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        function validateSignupForm(formData) {
+            if (!validateEmail(formData.email)) {
+                throw new Error('Please enter a valid email address.');
+            }
+            
+            if (!validatePassword(formData.password)) {
+                throw new Error('Password must be at least 6 characters long.');
+            }
+            
+            if (formData.password !== formData.confirmPassword) {
+                throw new Error('Passwords do not match.');
+            }
+            
+            // Check required fields
+            const requiredFields = ['firstName', 'lastName', 'farmName', 'location', 'farmType', 'farmSize'];
+            for (const field of requiredFields) {
+                if (!formData[field] || formData[field].trim() === '') {
+                    throw new Error(`Please fill in all required fields.`);
+                }
+            }
+        }
+
+        function validateLoginForm(formData) {
+            if (!validateEmail(formData.email)) {
+                throw new Error('Please enter a valid email address.');
+            }
+            
+            if (!formData.password) {
+                throw new Error('Please enter your password.');
+            }
+        }
+
+        // Form Handlers
+        function handleLogin(formData) {
+            return new Promise((resolve, reject) => {
+                // Simulate API call
+                setTimeout(() => {
+                    if (formData.email && formData.password) {
+                        const user = {
+                            email: formData.email,
+                            name: formData.email.split('@')[0],
+                            loginTime: new Date().toISOString()
+                        };
+                        resolve(user);
+                    } else {
+                        reject(new Error('Invalid credentials'));
+                    }
+                }, 2000);
+            });
+        }
+
+        function handleSignup(formData) {
+            return new Promise((resolve, reject) => {
+                // Simulate API call
+                setTimeout(() => {
+                    const user = {
+                        email: formData.email,
+                        name: `${formData.firstName} ${formData.lastName}`,
+                        farmName: formData.farmName,
+                        location: formData.location,
+                        farmType: formData.farmType,
+                        farmSize: formData.farmSize,
+                        signupTime: new Date().toISOString()
+                    };
+                    resolve(user);
+                }, 2000);
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                validateLoginForm(data);
+                setLoading('login-form', true);
+                
+                const user = await handleLogin(data);
+                currentUser = user;
+                
+                setLoading('login-form', false);
+                showToast('Welcome Back! 🌱', `Successfully signed in as ${user.name}.`);
+                
+                // Update dashboard with user info
+                document.getElementById('user-name').textContent = `Welcome, ${user.name}`;
+                
+                setTimeout(() => showDashboard(), 1000);
+                
+            } catch (error) {
+                setLoading('login-form', false);
+                showToast('Login Failed', error.message, 'error');
+            }
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                validateSignupForm(data);
+                setLoading('signup-form', true);
+                
+                const user = await handleSignup(data);
+                currentUser = user;
+                
+                setLoading('signup-form', false);
+                showToast('Account Created! 🌱', `Welcome to AgriPredict AI, ${user.name}!`);
+                
+                // Update dashboard with user info
+                document.getElementById('user-name').textContent = `Welcome, ${user.name}`;
+                
+                setTimeout(() => showDashboard(), 1000);
+                
+            } catch (error) {
+                setLoading('signup-form', false);
+                showToast('Signup Failed', error.message, 'error');
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check URL hash to determine initial page
+            const hash = window.location.hash.substring(1);
+            if (hash === 'signup') {
+                showSignup();
+            } else if (hash === 'dashboard') {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+            
+            // Update URL when page changes
+            window.addEventListener('hashchange', () => {
+                const newHash = window.location.hash.substring(1);
+                if (newHash === 'signup') {
+                    showSignup();
+                } else if (newHash === 'dashboard') {
+                    showDashboard();
+                } else {
+                    showLogin();
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // ESC to close modals or go back
+            if (e.key === 'Escape') {
+                if (currentPage === 'signup') {
+                    showLogin();
+                }
+            }
+            
+            // Enter to submit forms
+            if (e.key === 'Enter' && e.ctrlKey) {
+                const activeForm = document.querySelector('.auth-container:not(.hidden) form');
+                if (activeForm) {
+                    activeForm.requestSubmit();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
